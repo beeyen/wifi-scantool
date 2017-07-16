@@ -1,0 +1,92 @@
+@font-face {
+  font-family: 'careportal';
+  src:  url('/assets/fonts/careportal/careportal.eot?ns1vwn');
+  src:  url('/assets/fonts/careportal/careportal.eot?ns1vwn#iefix') format('embedded-opentype'),
+    url('/assets/fonts/careportal/careportal.ttf?ns1vwn') format('truetype'),
+    url('/assets/fonts/careportal/careportal.woff?ns1vwn') format('woff'),
+    url('/assets/fonts/careportal/careportal.svg?ns1vwn#careportal') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.careportal-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'careportal' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: 22px;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.careportal-session-log:before {
+  content: "\e902";
+  color: #009fdb;
+}
+.careportal-troubleshoot:before {
+  content: "\e904";
+  color: #fff;
+}
+.careportal-chat:before {
+  content: "\e905";
+  color: #fff;
+}
+.careportal-close:before {
+  content: "\e906";
+  color: #fff;
+}
+.careportal-dashboard:before {
+  content: "\e907";
+  color: #fff;
+}
+.careportal-dial:before {
+  content: "\e908";
+  color: #fff;
+}
+.careportal-knowledge-search:before {
+  content: "\e909";
+  color: #f2f2f2;
+}
+.careportal-new:before {
+  content: "\e90a";
+  color: #fff;
+}
+.careportal-overview:before {
+  content: "\e90b";
+  color: #fff;
+}
+.careportal-ping:before {
+  content: "\e90c";
+  color: #fff;
+}
+.careportal-remote:before {
+  content: "\e90d";
+  color: #fff;
+}
+.careportal-router:before {
+  content: "\e90e";
+  color: #fff;
+}
+.careportal-overview:before {
+  content: "\e90f";
+  color: #fff;
+}
+.careportal-arrow-up:before {
+  content: "\e903";
+  color: #0469ae;
+}
+.careportal-arrow-down:before {
+  content: "\e900";
+  color: #0469ae;
+}
+.careportal-search:before {
+  content: "\e901";
+  color: #fff;
+}

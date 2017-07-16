@@ -1,0 +1,19 @@
+<div class="main">
+<div class="container-fluid">
+    <h4 class="media-heading">GateWay Location {{gatewayLocation}}</h4>
+    <h4 class="media-heading">Total Floor {{totalFloors}}</h4>
+     <div class="" *ngFor="let floor  of floors$ | async">
+      <h4 class="media-heading">Floor {{floor.name}}</h4>
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let item  of getFloorData(floor.value) | async">
+        <i class="fa fa-signal" aria-hidden="true"></i> {{item.room}}    -{{item.reading}} dBm
+        </li>
+      </ul>
+    </div>
+</div>
+<p class="lead lead__center">
+    <a class="btn btn-default btn-lg" [routerLink]="['/scanning/more']"
+      routerLinkActive="active" role="button">SCAN MORE ROOMS</a>
+    <a class="btn btn-default btn-lg" (click)="done()">DONE</a>
+</p>
+</div>

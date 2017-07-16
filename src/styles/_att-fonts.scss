@@ -1,0 +1,47 @@
+//
+// Fonts
+// --------------------------------------------------
+
+// ATTAleckSans
+// --------------------------------------------------
+
+// BOLD
+@font-face {
+    font-family: 'ATTAleckSansBold';
+    font-style: normal;
+    font-weight: 400;
+    src: url("/assets/fonts/att/ATTAleckSans_Bd.ttf") format("ttf");
+}
+
+@font-face {
+    font-family: 'ATTAleckSansBold';
+    font-style: italic;
+    font-weight: 400;
+    src: url("/assets/fonts/att/ATTAleckSans_Bdlt.ttf") format("ttf");
+}
+// !BOLD
+
+// REGULAR
+@font-face {
+    font-family: 'ATTAleckSansLight';
+    font-style: normal;
+    font-weight: 400;
+    src: url("/assets/fonts/att/ATTAleckSans_Lt.ttf") format("ttf");
+}
+// !LIGHT
+
+// MEDIUM
+@font-face {
+    font-family: 'ATTAleckSans';
+    font-style: normal;
+    font-weight: 400;
+    src: url("/assets/fonts/att/ATTAleckSans_Md.ttf") format("ttf");
+}
+
+@font-face {
+    font-family: 'ATTAleckSans';
+    font-style: italic;
+    font-weight: 400;
+    src: url("/assets/fonts/att/ATTAleckSans_Mdlt.ttf") format("ttf");
+}
+// !MEDIUM

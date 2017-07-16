@@ -1,0 +1,33 @@
+<div class="main">
+<div class="container-fluid">
+  <form novalidate #f="ngForm" (ngSubmit)="onSubmit(f)" #f="ngForm">
+    <p>Do you have a basement?</p>
+    <div class="form-inline">
+      <fieldset class="form-group" *ngFor="let b of basements$ | async">
+        <input class="with-gap" name="basement" type="radio" id="basement{{b.value}}" [value]="b.value"  [(ngModel)]="b.value">
+        <label for="basement{{b.value}}">{{b.name}}</label>
+      </fieldset>
+    </div>
+    <hr class="my">
+    <p>How many floor do you have (not inlude basement)?</p>
+    <div class="form-inline">
+      <fieldset class="form-group" *ngFor="let floor of floors$ | async">
+        <input class="with-gap" name="floors" type="radio" id="floor{{floor.id}}"
+            [value]="floor.id" [(ngModel)]="floor.id">
+        <label for="floor{{floor.id}}"><span>{{floor.name}}</span></label>
+      </fieldset>
+    </div>
+    <hr class="my">
+    <p>What is the square footage of your home?</p>
+    <div class="" *ngFor="let s of sqfts$ | async; let idx = index">
+      <input class="with-gap" type="radio" name="sqft"
+        id = "sqft{{idx}}"
+        [value] = "s.id" [(ngModel)]="s.id">
+      <label for="sqft{{idx}}"><span>{{s.name}}</span></label>
+    </div>
+    <p class="lead lead__center">
+      <button class="btn btn-primary btn-lg" type="submit" [disabled]="f.invalid">NEXT</button>
+    </p>
+  </form>
+</div>
+</div>
