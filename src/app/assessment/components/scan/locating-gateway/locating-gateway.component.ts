@@ -34,6 +34,7 @@ export class LocatingGatewayComponent implements OnInit {
     }
     const strength = this.service.checkSignalStrength(value.reading);
     value.strength = strength.toLowerCase();
+    value.reading = Math.abs(value.reading);
     this.service.addResult(value);
     // check strength and determine route
     if (strength === 'GREEN') {

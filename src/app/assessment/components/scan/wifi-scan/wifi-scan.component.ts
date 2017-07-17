@@ -61,7 +61,7 @@ export class WifiScanComponent implements OnInit {
       this.instruction = `Now go to the room/area on the ${this.getFloorName(floor)} that is farthest away from here.`;
     } else if (scanType === 1) {
       this.instruction = `Now go to the next room/area on the ${this.getFloorName(floor)} that is closer to the Wi-Fi Gateway`;
-    } 
+    }
   }
 
   getFloorName(floor) {
@@ -214,6 +214,7 @@ export class WifiScanComponent implements OnInit {
     // const floors = [FLOORS.Basement, FLOORS.First, FLOORS.Second, FLOORS.Third, FLOORS.Fourth];
     result.floor = this.floor;
     result.strength = strength.toLowerCase();
+    result.reading = Math.abs(result.reading);
     this.service.addResult(result);
     const scanPerFloor = this.scanPerFloor.Item(Number(this.floor).toString());
     // keep track of how many scan happening on this floor
