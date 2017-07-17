@@ -23,13 +23,6 @@ export class LocatingGatewayComponent implements OnInit {
     if (this.service.getTotalFloors() <= 1) {
       this.displayFloorSelection = false;
     }
-    if (this.floors$) {
-      this.floors$.subscribe(data => {
-        if (data) {
-          console.log(data);
-        }
-      });
-    }
   }
 
   onSubmit({ value, valid }: { value: Result, valid: boolean }) {
@@ -39,15 +32,14 @@ export class LocatingGatewayComponent implements OnInit {
       this.service.setGateWayLocation(1);
       value.floor = 1;
     }
-    // console.log(value, valid)
     const strength = this.service.checkSignalStrength(value.reading);
+    value.strength = strength.toLowerCase();
     this.service.addResult(value);
     // check strength and determine route
     if (strength === 'GREEN') {
-      this.router.navigate([`/scanning/wifi/${value.floor}`], { queryParams: { 'scan': 0 } });
+      this.router.navigate([`/wifi-scan/wifi/${value.floor}`], { queryParams: { 'scan': 0 }, skipLocationChange: true });
     } else {
-      this.router.navigate([`/scanning/wifi/${value.floor}`], { queryParams: { 'scan': 1 } });
+      this.router.navigate([`/wifi-scan/wifi/${value.floor}`], { queryParams: { 'scan': 1 }, skipLocationChange: true });
     }
-    // this.router.navigate([`/scanning/wifi/${value.floor}`]);
   }
 }

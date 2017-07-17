@@ -2,15 +2,13 @@
 <cp-stepper [activeStep]="1"></cp-stepper>
 <div class="container-fluid">
     <p>Rebooting Wi-Fi Gateway, this will take 3 to 5 minutes.</p>
-    <p>TELL THEM HOW TO MANUALLY REBOOT</p>
     <p>When fully reboot click next.</p>
-
     <div class="wifi-scan">
         <img src="assets/images/wifi_scan.png" class="img-fluid" alt="">
     </div>
     <p class="lead lead__center">
-        <a class="btn btn-primary btn-lg" [routerLink]="['/scanning/gateway']"
-          routerLinkActive="active" role="button">Next</a>
+        <a class="btn btn-primary btn-lg"
+          routerLinkActive="active" (click)="next()" role="button">Next</a>
     </p>
 </div>
 </div>

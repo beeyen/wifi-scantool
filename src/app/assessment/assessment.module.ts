@@ -15,12 +15,15 @@ import { AssessmentService } from './services/assessment.service';
 import { CompleteComponent } from './components/scan/complete/complete.component';
 import { ResultComponent } from './components/scan/result/result.component';
 import { MoreComponent } from './components/scan/more/more.component';
+import { FloorNamePipe } from './pipes/floorname.pipe';
+import { HomeSqftPipe } from './pipes/homesqft.pipe';
+import { StopComponent } from './components/scan/stop/stop.component';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule
+    FormsModule,
   ],
   declarations: [
     GettingStartedComponent,
@@ -33,7 +36,10 @@ import { MoreComponent } from './components/scan/more/more.component';
     WifiScanComponent,
     CompleteComponent,
     ResultComponent,
-    MoreComponent
+    MoreComponent,
+    FloorNamePipe,
+    HomeSqftPipe,
+    StopComponent
   ],
   exports: [
     HeaderComponent

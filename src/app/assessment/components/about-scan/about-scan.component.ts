@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cp-about-scan',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AboutScanComponent implements OnInit {
   title: String = 'About Wi-Fi Scan';
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
+  rebooting() {
+    this.router.navigate(['/rebooting'], { skipLocationChange: true });
+  }
 }

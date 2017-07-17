@@ -1,7 +1,23 @@
 <div class="main">
 <cp-stepper [activeStep]="2"></cp-stepper>
 <div class="container-fluid">
-  <p class="">Go to the room where the Wi-Fi Gateway is located and do a scan with RF MONITOR for 5 seconds.</p>
+  <div class="media">
+      <div class="media-left">
+          <div class="item-circle"><span>1</span></div>
+      </div>
+      <div class="media-body">
+          <p>Go to the room where the Wi-Fi Gateway is located.</p>
+      </div>
+  </div>
+  <div class="media">
+      <div class="media-left">
+          <div class="item-circle"><span>2</span></div>
+      </div>
+      <div class="media-body">
+          <p>Scan using RF monitor and wait in the room for 15 sec before recording the result. </p>
+      </div>
+  </div>
+  <hr class="my">
   <form novalidate #f="ngForm" (ngSubmit)="onSubmit(f)" #f="ngForm">
     <div class="md-form" *ngIf="displayFloorSelection">
       <p>Select the floor where the Wi-Fi gateway is?</p>
@@ -19,7 +35,7 @@
         <label for="room"></label>
     </div>
     <div class="md-form">
-        <input type="text" name="reading" id="reading" class="form-control" [ngModel]="result?.reading" required
+        <input type="number" name="reading" id="reading" class="form-control" [ngModel]="result?.reading" required
         placeholder="Enter dBm Reading">
         <label for="reading"></label>
     </div>
@@ -27,7 +43,5 @@
       <button class="btn btn-primary btn-lg" type="submit" [disabled]="f.invalid">SUBMIT</button>
     </p>
   </form>
-  <!-- {{ f.value | json }}
-  {{ f.invalid }} -->
 </div>
 </div>

@@ -20,6 +20,7 @@ export class ResultComponent implements OnInit {
   floors$ = this.store.select<any[]>('floors');
   gatewayLocation: number;
   totalFloors: number;
+  sqft: number;
   constructor(private store: Store, private router: Router, private service: AssessmentService) { }
 
   get showResult() {
@@ -30,6 +31,12 @@ export class ResultComponent implements OnInit {
     this.service.testResults();
     this.totalFloors = +this.service.getTotalFloors();
     this.gatewayLocation = +this.service.getGatewayLocation(); // +convert to number
+    const home = JSON.parse(localStorage.getItem('home'));
+    this.sqft = home.sqft;
+
+    if (!this.store.value.results) {
+      this.router.navigate(['/gettingStarted']);
+    }
   }
 
   getFloorData(floor: number) {

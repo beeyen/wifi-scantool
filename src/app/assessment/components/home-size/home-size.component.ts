@@ -23,17 +23,20 @@ export class HomeSizeComponent implements OnInit {
   constructor(private store: Store, private router: Router, private service: AssessmentService) { }
 
   ngOnInit() {
-    this.store.set('floors', [{ id: 1, name: '1' }, { id: 2, name: '2' }, { id: 3, name: '3' }]);
+    this.store.set('floors', [{ id: 1, name: '1' }, { id: 2, name: '2' }, { id: 3, name: '3' }, { id: 4, name: '4'}]);
     this.store.set('basements', [{ value: true, name: 'yes' }, { value: false, name: 'no' }]);
     this.store.set('sqfts', [
       { id: 1, name: '0 - 2000 SqFt' },
-      { id: 2, name: '3001 - 4000 SqFt' },
+      { id: 2, name: '2001 - 4000 SqFt' },
       { id: 3, name: '4001 - 5000 SqFt' },
-      { id: 4, name: 'I am not sure' },
+      { id: 4, name: '5001+ SqFt' },
+      { id: 5, name: 'I am not sure' },
     ]);
   }
 
   onSubmit({ value, valid }: { value: Home, valid: boolean }) {
+    localStorage.clear();
+    this.store.set('results', []);
     let totalFloors = 0;
     // save this to store???
     // this.store.set('home', value);
@@ -46,7 +49,7 @@ export class HomeSizeComponent implements OnInit {
     localStorage.setItem('totalFloors', JSON.stringify(totalFloors));
     localStorage.setItem('home', JSON.stringify(value));
     this.service.initFloors();
-    this.router.navigate(['/aboutScan']);
+    this.router.navigate(['/aboutScan'], { skipLocationChange: true });
   }
 
 }

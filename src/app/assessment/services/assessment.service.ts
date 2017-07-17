@@ -24,7 +24,6 @@ export class AssessmentService {
     }
     this.results.push(result);
     this.store.set('results', this.results);
-    this.test();
   }
 
   testResults() {
@@ -32,7 +31,7 @@ export class AssessmentService {
       this.results$.subscribe(data => {
         if (data) {
           this.results = data
-          console.log('results objectx:', this.results);
+          // console.log('results objectx:', this.results);
         }
       });
     }
@@ -46,7 +45,7 @@ export class AssessmentService {
     // retrieving # of floor and construct floor list
     const home = JSON.parse(localStorage.getItem('home'));
     if (home.basement) {
-      floors.push({ value: 0, name: 'Basement' });
+      floors.push({ value: '0', name: 'Basement' });
       for (let i = 1; i <= home.floors; i++) {
         floors.push({ value: `${i}`, name: `${i}` });
       }
@@ -63,14 +62,16 @@ export class AssessmentService {
     const floors = [];
     // retrieving # of floor and construct floor list
     const home = JSON.parse(localStorage.getItem('home'));
-    if (home.basement) {
-      floors.push({ value: 0, name: 'Basement' });
-      for (let i = 1; i <= home.floors; i++) {
-        floors.push({ value: `${i}`, name: `${i}` });
-      }
-    } else {
-      for (let i = 1; i <= home.floors; i++) {
-        floors.push({ value: `${i}`, name: `${i}` });
+    if (home) {
+      if (home.basement) {
+        floors.push({ value: '0', name: 'Basement' });
+        for (let i = 1; i <= home.floors; i++) {
+          floors.push({ value: `${i}`, name: `${i}` });
+        }
+      } else {
+        for (let i = 1; i <= home.floors; i++) {
+          floors.push({ value: `${i}`, name: `${i}` });
+        }
       }
     }
     this.store.set('floors', floors);
@@ -89,12 +90,12 @@ export class AssessmentService {
   }
 
   getGatewayLocation() {
-    console.log(JSON.parse(localStorage.getItem('gatewayLocation')));
+    // console.log(JSON.parse(localStorage.getItem('gatewayLocation')));
     return JSON.parse(localStorage.getItem('gatewayLocation'));
   }
 
   getFloorData(floor: number) {
-    console.log('get result for floor:', floor);
+    // console.log('get result for floor:', floor);
     const value = this.store.value.results;
     const data = value.map((result: Result) => {
       if (result.floor === floor) {

@@ -28,13 +28,15 @@ export class MoreComponent implements OnInit {
     if (!this.displayFloorSelection) {
       value.floor = 1;
     }
+    const strength = this.service.checkSignalStrength(value.reading);
+    value.strength = strength.toLowerCase();
     this.service.addResult(value);
     this.complete();
   }
 
 
   complete() {
-    this.router.navigate(['/scanning/complete']);
+    this.router.navigate(['/wifi-scan/complete'], { skipLocationChange: true });
   }
 
 }

@@ -56,56 +56,74 @@ export class WifiScanComponent implements OnInit {
 
   templateSetUp(floor, scanType) {
     if (scanType === 0) {
-      this.instruction = `Now go to the room/area on the ${floor} floor that is furthest away from the Wi- Fi Gateway.`;
+      this.instruction = `Now go to the room/area on the ${this.getFloorName(floor)} that is farthest away from the Wi-Fi Gateway.`;
     } else if (scanType === 2) {
-      this.instruction = `Now go to the room/area on the ${floor} floor that is furthest away from here.`;
+      this.instruction = `Now go to the room/area on the ${this.getFloorName(floor)} that is farthest away from here.`;
     } else if (scanType === 1) {
-      this.instruction = `Now go to one room closer to the Wi-Fi Gateway on this floor.`;
+      this.instruction = `Now go to the next room/area on the ${this.getFloorName(floor)} that is closer to the Wi-Fi Gateway`;
+    } 
+  }
+
+  getFloorName(floor) {
+    switch (floor) {
+      case 0:
+        return 'basement';
+      case 1:
+        return 'first floor';
+      case 2:
+        return 'second floor';
+      case 3:
+        return 'third floor';
+      case 4:
+        return 'fourth floor';
     }
   }
 
-  getNextFloor(currentFloor: number, currentStrength: string, scanPerFloor: any[]) {
+  getNextFloor(currentFloor: number, scanPerFloor: any[]) {
     // logic to determine what is the next floor in the flow
     const home = JSON.parse(localStorage.getItem('home'));
-    const result = scanPerFloor.filter(res => { return res === 'GREEN' });
-    if (currentFloor === this.gatewayLocation) {
+    const green = scanPerFloor.filter(res => { return res === 'GREEN' });
+    if (currentFloor === this.gatewayLocation) { // second scan of locating gateway position
       // gateway location on top floor
-      if (currentFloor === this.totalFloors && this.totalFloors > 1) {
-        if (result.length === 1 && scanPerFloor[scanPerFloor.length - 1] === 'RED') {
+      if ((!home.basement && this.totalFloors > 1 && this.gatewayLocation === this.totalFloors) ||
+        (home.basement && this.totalFloors > 1 && this.gatewayLocation === this.totalFloors - 1)) {
+        if (green.length === 0 && scanPerFloor.length < 2) {
+          return currentFloor;
+        } else if (green.length === 1 && this.scanType === 1 && scanPerFloor.length < 2) {
           return currentFloor;
         } else {
           return currentFloor - 1;
         }
-      } else {
-        if (result.length === 1 || result.length === 2) {
-          // go next floor
-          if (currentFloor <= this.totalFloors) {
+      } else { // bottom floor
+        if (green.length === 0 && scanPerFloor.length < 2) {
+          return currentFloor;
+        } else if (green.length === 1 && this.scanType === 1 && scanPerFloor.length < 2) {
+          return currentFloor;
+        } else {
+          if ((!home.basement && currentFloor <= this.totalFloors) ||
+            (home.basement && currentFloor <= this.totalFloors - 1)) {
             return currentFloor + 1;
           }
-        } else {
-          // same floor
-          return currentFloor;
         }
       }
-    } else {
+    } else { // step after locating gateway position
       // gateway on first floor
-      if (this.gatewayLocation === 1) {
-        if (result.length === 2 || scanPerFloor.length >= 3) {
+      if ((!home.basement && this.gatewayLocation === 1) || (home.basement && this.gatewayLocation === 0)) {
+        if (green.length === 2 || scanPerFloor.length >= 3) {
           // go next floor
-          if (currentFloor < this.totalFloors) {
+          if ((!home.basement && currentFloor < this.totalFloors) ||
+            (home.basement && currentFloor < this.totalFloors - 1)) {
             return currentFloor + 1;
           } else {
-            if (currentFloor === this.totalFloors) {
-              // done scanning all floors
-              return -1;
-            }
+            return -1;
           }
         } else {
           // same floor
           return currentFloor;
         }
-      } else if (this.gatewayLocation === this.totalFloors) { // gateway locate on top floor
-        if (result.length === 2 || scanPerFloor.length >= 3) {
+      } else if ((!home.basement && this.gatewayLocation === this.totalFloors) ||
+        (home.basement && this.gatewayLocation === this.totalFloors - 1)) { // gateway locate on top floor
+        if (green.length === 2 || scanPerFloor.length >= 3) {
           // go next floor
           if (home.basement && currentFloor > 0 || !home.basement && currentFloor > 1) {
             return currentFloor - 1;
@@ -118,7 +136,55 @@ export class WifiScanComponent implements OnInit {
           return currentFloor;
         }
       } else { // gateway in the middle floors
-        // TODO:
+        // TODO: get all scans # from other floor
+        if ((!home.basement && currentFloor === this.totalFloors) ||
+          (home.basement && currentFloor === this.totalFloors - 1)) {
+          if (green.length === 2 || scanPerFloor.length >= 3) {
+            // go to next floor ( up first then down)
+            if ((!home.basement && currentFloor === this.totalFloors && currentFloor > 0) ||
+              (home.basement && currentFloor === this.totalFloors - 1 && currentFloor > 0)) { // on top floor so going down
+              const testFloor = this.gatewayLocation - 1;
+              const greenlist = this.scanPerFloor.Item(Number(testFloor).toString()).filter(res => res === 'GREEN');
+              const list = this.scanPerFloor.Item(Number(testFloor).toString());
+              if (greenlist.length === 2) {
+                if (testFloor > 0) {
+                  return testFloor - 1;
+                } else {
+                  return -1;
+                }
+              } else {
+                return testFloor;
+              }
+            }
+          } else {
+            return currentFloor;
+          }
+        } else if ((!home.basement && currentFloor < this.totalFloors && currentFloor > this.gatewayLocation) ||
+          (home.basement && currentFloor < this.totalFloors - 1 && currentFloor > this.gatewayLocation)) {
+          // do somethi
+          if (green.length === 2 || scanPerFloor.length >= 3) {
+            // go next floor
+            if ((!home.basement && currentFloor <= this.totalFloors) ||
+              (home.basement && currentFloor <= this.totalFloors - 1)) {
+              return currentFloor + 1;
+            }
+          } else {
+            return currentFloor;
+          }
+        } else {
+          // do somethi
+          if (green.length === 2 || scanPerFloor.length >= 3) {
+            // go next floor
+            if (home.basement && currentFloor > 0 || !home.basement && currentFloor > 1) {
+              return currentFloor - 1;
+            } else if (home.basement && currentFloor === 0 || !home.basement && currentFloor === 1) {
+              // done scanning all floors
+              return -1;
+            }
+          } else {
+            return currentFloor;
+          }
+        }
       }
     }
   }
@@ -147,6 +213,7 @@ export class WifiScanComponent implements OnInit {
     const strength = this.service.checkSignalStrength(value.reading);
     // const floors = [FLOORS.Basement, FLOORS.First, FLOORS.Second, FLOORS.Third, FLOORS.Fourth];
     result.floor = this.floor;
+    result.strength = strength.toLowerCase();
     this.service.addResult(result);
     const scanPerFloor = this.scanPerFloor.Item(Number(this.floor).toString());
     // keep track of how many scan happening on this floor
@@ -164,20 +231,30 @@ export class WifiScanComponent implements OnInit {
       // go next floor
       // if total floor is 1, go to complete
       if (this.totalFloors === 1) {
-        if (strength === 'GREEN' || scanPerFloor.length === 1) {
-          this.complete();
-        } else {
+        if (strength !== 'GREEN' && this.scanType === 1) {
+          this.stopScan();
+        } else if (strength !== 'GREEN' && this.scanType !== 1 && scanPerFloor.length < 2) {
           this.nextScan({ floor: this.floor, scanType: 1 })
           this.templateSetUp(this.floor, 1);
+        } else if (strength === 'GREEN' && this.scanType === 1 && scanPerFloor.length < 2) {
+          this.nextScan({ floor: this.floor, scanType: 0 })
+          this.templateSetUp(this.floor, 0);
+        } else {
+          this.complete();
         }
       } else {
-        this.floor = this.getNextFloor(this.floor, strength, scanPerFloor);
-        this.scanType = this.getScanType(this.floor);
-        this.nextScan({ floor: this.floor, scanType: this.scanType });
-        this.templateSetUp(this.floor, this.scanType);
+        const greenlist = this.scanPerFloor.Item(Number(this.floor).toString()).filter(res => res === 'GREEN');
+        if (greenlist.length === 0 && this.scanType === 1) {
+          this.stopScan();
+        } else {
+          this.floor = this.getNextFloor(this.floor, scanPerFloor);
+          this.scanType = this.getScanType(this.floor);
+          this.nextScan({ floor: this.floor, scanType: this.scanType });
+          this.templateSetUp(this.floor, this.scanType);
+        }
       }
     } else {
-      this.floor = this.getNextFloor(this.floor, strength, scanPerFloor);
+      this.floor = this.getNextFloor(this.floor, scanPerFloor);
       this.scanType = this.getScanType(this.floor);
       if (this.floor !== -1) {
         this.nextScan({ floor: this.floor, scanType: this.scanType });
@@ -191,14 +268,19 @@ export class WifiScanComponent implements OnInit {
   nextScan(scanData: ScanInfo) {
 
     const navigationExtras: NavigationExtras = {
-      queryParams: { 'scan': scanData.scanType }
+      queryParams: { 'scan': scanData.scanType },
+      skipLocationChange: true
     };
     this.floor = scanData.floor;
-    this.router.navigate([`/scanning/wifi/${scanData.floor}`], navigationExtras);
+    this.router.navigate([`/wifi-scan/wifi/${scanData.floor}`], navigationExtras);
     this.templateSetUp(scanData.floor, scanData.scanType);
   }
 
   complete() {
-    this.router.navigate(['/scanning/complete']);
+    this.router.navigate(['/wifi-scan/complete'], { skipLocationChange: false });
+  }
+
+  stopScan() {
+    this.router.navigate(['/stop'], { skipLocationChange: false });
   }
 }

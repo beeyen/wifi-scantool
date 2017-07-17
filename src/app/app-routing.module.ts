@@ -9,7 +9,7 @@ import { LocatingGatewayComponent } from './assessment/components/scan/locating-
 import { WifiScanComponent } from './assessment/components/scan/wifi-scan/wifi-scan.component';
 import { ResultComponent } from './assessment/components/scan/result/result.component';
 import { MoreComponent } from './assessment/components/scan/more/more.component';
-
+import { StopComponent } from './assessment/components/scan/stop/stop.component';
 
 const ROUTES: Routes = [
   {
@@ -17,7 +17,7 @@ const ROUTES: Routes = [
     component: GettingStartedComponent
   },
   {
-    path: 'homeSize',
+    path: 'wifi-scan',
     component: HomeSizeComponent
   },
   {
@@ -25,36 +25,35 @@ const ROUTES: Routes = [
     component: AboutScanComponent
   },
   {
+    path: 'stop',
+    component: StopComponent
+  },
+  {
     path: 'rebooting',
     component: RebootingComponent
   },
   {
-    path: 'scanning/gateway',
+    path: 'wifi-scan/gateway',
     component: LocatingGatewayComponent
   },
   {
-    path: 'scanning/wifi/:floor',
+    path: 'wifi-scan/wifi/:floor',
     component: WifiScanComponent
   },
   {
-    path: 'scanning/complete',
+    path: 'wifi-scan/complete',
     component: CompleteComponent
   },
   {
-    path: 'scanning/result',
+    path: 'wifi-scan/result',
     component: ResultComponent
   },
   {
-    path: 'scanning/more',
+    path: 'wifi-scan/more',
     component: MoreComponent
   },
   {
-    path: 'scanning',
-    redirectTo: '/scanning/gateway',
-    pathMatch: 'full'
-  },
-  {
-    path: '',
+    path: '**',
     redirectTo: '/gettingStarted',
     pathMatch: 'full'
   },

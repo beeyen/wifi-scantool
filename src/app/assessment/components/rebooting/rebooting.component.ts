@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '../../../store';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cp-rebooting',
@@ -8,11 +9,14 @@ import { Store } from '../../../store';
 })
 export class RebootingComponent implements OnInit {
   title: String = 'Rebooting Wi-Fi Gateway';
-  constructor(private store: Store) {
+  constructor(private store: Store, private router: Router) {
     const home = JSON.parse(localStorage.getItem('home'));
   }
 
   ngOnInit() {
   }
 
+  next() {
+    this.router.navigate(['/wifi-scan/gateway'], { skipLocationChange: true });
+  }
 }
