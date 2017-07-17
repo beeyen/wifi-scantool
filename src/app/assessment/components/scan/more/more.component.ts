@@ -30,6 +30,7 @@ export class MoreComponent implements OnInit {
     }
     const strength = this.service.checkSignalStrength(value.reading);
     value.strength = strength.toLowerCase();
+    value.reading = Math.abs(value.reading);
     this.service.addResult(value);
     this.complete();
   }

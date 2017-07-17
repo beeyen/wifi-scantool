@@ -40,7 +40,8 @@ export class LocatingGatewayComponent implements OnInit {
     if (strength === 'GREEN') {
       this.router.navigate([`/wifi-scan/wifi/${value.floor}`], { queryParams: { 'scan': 0 }, skipLocationChange: true });
     } else {
-      this.router.navigate([`/wifi-scan/wifi/${value.floor}`], { queryParams: { 'scan': 1 }, skipLocationChange: true });
+      // this.router.navigate([`/wifi-scan/wifi/${value.floor}`], { queryParams: { 'scan': 1 }, skipLocationChange: true });
+      this.router.navigate(['/stop'], { skipLocationChange: true });
     }
   }
 }
