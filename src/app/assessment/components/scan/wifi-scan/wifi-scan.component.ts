@@ -7,6 +7,7 @@ import { AssessmentService } from '../../../services/assessment.service';
 import { FLOORS } from '../../../models/types';
 import { ScanInfo } from '../../../models/scanInfo';
 import { Dictionary } from '../../../models/ikeycollection';
+import { FLOOR_LIST_DATA } from '../../../models/types';
 
 @Component({
   selector: 'cp-wifi-scan',
@@ -23,6 +24,7 @@ export class WifiScanComponent implements OnInit {
   gatewayLocation;
   totalFloors: number;
   nextScanData: ScanInfo;
+  wifiFloors: number[];
   floors$ = this.store.select<any[]>('floors');
   floors = [];
   scanPerFloor = new Dictionary<any[]>();
@@ -40,27 +42,31 @@ export class WifiScanComponent implements OnInit {
     // construct the instruction string dynamically
     this.gatewayLocation = +this.service.getGatewayLocation(); // +convert to number
     this.totalFloors = +this.service.getTotalFloors();
-    if (this.floors$) {
-      this.floors$.subscribe(data => {
-        if (data) {
-          this.floors = data
-        }
-      });
+    this.floors$.subscribe(data => {
+      if (data) {
+        this.floors = data
+      }
+    });
+    // TODO: init scanPerFloor Dictionary by wifi floor selection
+    this.wifiFloors = JSON.parse(localStorage.getItem('wifiFloors'));
+    console.log(this.wifiFloors);
+    /* for (let i = 0; i < this.totalFloors; i++) {
+      this.scanPerFloor.Add(this.floors[i].id, []);
+    } */
+    for (let i = 0; i < this.wifiFloors.length; i++) {
+      this.scanPerFloor.Add(Number(this.wifiFloors[i]).toString(), []);
     }
-    // init scanPerFloor Dictionary
-    for (let i = 0; i < this.totalFloors; i++) {
-      this.scanPerFloor.Add(this.floors[i].value, []);
-    }
+    console.log(this.scanPerFloor);
     this.templateSetUp(this.floor, this.scanType);
   }
 
   templateSetUp(floor, scanType) {
     if (scanType === 0) {
-      this.instruction = `Now go to the room/area on the ${this.getFloorName(floor)} that is farthest away from the Wi-Fi Gateway.`;
+      this.instruction = `Now go to the room/area on the ${FLOOR_LIST_DATA[floor].desc} that is farthest away from the Wi-Fi Gateway.`;
     } else if (scanType === 2) {
-      this.instruction = `Now go to the room/area on the ${this.getFloorName(floor)} that is farthest away from here.`;
+      this.instruction = `Now go to the room/area on the ${FLOOR_LIST_DATA[floor].desc} that is farthest away from here.`;
     } else if (scanType === 1) {
-      this.instruction = `Now go to the next room/area on the ${this.getFloorName(floor)} that is closer to the Wi-Fi Gateway`;
+      this.instruction = `Now go to the next room/area on the ${FLOOR_LIST_DATA[floor].desc} that is closer to the Wi-Fi Gateway`;
     }
   }
 
@@ -232,9 +238,7 @@ export class WifiScanComponent implements OnInit {
       // go next floor
       // if total floor is 1, go to complete
       if (this.totalFloors === 1) {
-        if (strength !== 'GREEN' && this.scanType === 1) {
-          this.stopScan();
-        } else if (strength !== 'GREEN' && this.scanType !== 1 && scanPerFloor.length < 2) {
+        if (strength !== 'GREEN' && this.scanType !== 1 && scanPerFloor.length < 2) {
           this.nextScan({ floor: this.floor, scanType: 1 })
           this.templateSetUp(this.floor, 1);
         } else if (strength === 'GREEN' && this.scanType === 1 && scanPerFloor.length < 2) {
@@ -244,15 +248,14 @@ export class WifiScanComponent implements OnInit {
           this.complete();
         }
       } else {
-        const greenlist = this.scanPerFloor.Item(Number(this.floor).toString()).filter(res => res === 'GREEN');
+        /* const greenlist = this.scanPerFloor.Item(Number(this.floor).toString()).filter(res => res === 'GREEN');
         if (greenlist.length === 0 && this.scanType === 1) {
           this.stopScan();
-        } else {
-          this.floor = this.getNextFloor(this.floor, scanPerFloor);
-          this.scanType = this.getScanType(this.floor);
-          this.nextScan({ floor: this.floor, scanType: this.scanType });
-          this.templateSetUp(this.floor, this.scanType);
-        }
+        */
+        this.floor = this.getNextFloor(this.floor, scanPerFloor);
+        this.scanType = this.getScanType(this.floor);
+        this.nextScan({ floor: this.floor, scanType: this.scanType });
+        this.templateSetUp(this.floor, this.scanType);
       }
     } else {
       this.floor = this.getNextFloor(this.floor, scanPerFloor);

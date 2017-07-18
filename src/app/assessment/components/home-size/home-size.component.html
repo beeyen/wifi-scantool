@@ -4,7 +4,8 @@
     <p>Do you have a basement?</p>
     <div class="form-inline">
       <fieldset class="form-group" *ngFor="let b of basements$ | async">
-        <input class="with-gap" name="basement" type="radio" id="basement{{b.value}}" [value]="b.value"  [(ngModel)]="b.value">
+        <input class="with-gap" name="basement" type="radio" id="basement{{b.value}}"
+        [value]="b.value"  [(ngModel)]="b.value" (change)="logBasement(b.value)" required>
         <label for="basement{{b.value}}">{{b.name}}</label>
       </fieldset>
     </div>
@@ -12,9 +13,18 @@
     <p>How many floors do you have (not including the basement)?</p>
     <div class="form-inline">
       <fieldset class="form-group" *ngFor="let floor of floors$ | async">
-        <input class="with-gap" name="floors" type="radio" id="floor{{floor.id}}"
-            [value]="floor.id" [(ngModel)]="floor.id">
-        <label for="floor{{floor.id}}"><span>{{floor.name}}</span></label>
+        <input class="with-gap" name="floors" type="radio" id="floor_{{floor.id}}"
+            [value]="floor.id" [(ngModel)]="floor.id" (change)="logFloor(floor.id)" required>
+        <label for="floor_{{floor.id}}"><span>{{floor.name}}</span></label>
+      </fieldset>
+    </div>
+    <hr class="my">
+    <p>Which floors do you needs Wi-Fi coverage in?</p>
+    <div class="form-inline">
+        <fieldset class="form-group" *ngFor="let bf of bfloors">
+        <input name="wifiFloors" class="filled-in" type="checkbox" id="wifi-floor{{bf.id}}"
+            [value]="bf.id" [(ngModel)]="bf.checked">
+        <label for="wifi-floor{{bf.id}}">{{bf.name}}</label>
       </fieldset>
     </div>
     <hr class="my">
@@ -26,8 +36,11 @@
       <label for="sqft{{idx}}"><span>{{s.name}}</span></label>
     </div>
     <p class="lead lead__center">
-      <button class="btn btn-primary btn-lg" type="submit" [disabled]="f.invalid">NEXT</button>
+      <button class="btn btn-primary btn-lg" type="submit" [disabled]="selectedOptions.length===0">NEXT</button>
     </p>
   </form>
 </div>
+<!-- {{ f.value | json }}
+{{ f.invalid || !f.value.wifiFloors }}
+{{ f.value.wifiFloors }} -->
 </div>

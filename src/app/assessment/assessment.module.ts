@@ -10,15 +10,15 @@ import { RebootingComponent } from './components/rebooting/rebooting.component';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { LocatingGatewayComponent } from './components/scan/locating-gateway/locating-gateway.component';
 import { WifiScanComponent } from './components/scan/wifi-scan/wifi-scan.component';
-import { Store } from '../store';
 import { AssessmentService } from './services/assessment.service';
 import { CompleteComponent } from './components/scan/complete/complete.component';
 import { ResultComponent } from './components/scan/result/result.component';
 import { MoreComponent } from './components/scan/more/more.component';
+import { StopComponent } from './components/scan/stop/stop.component';
 import { FloorNamePipe } from './pipes/floorname.pipe';
 import { HomeSqftPipe } from './pipes/homesqft.pipe';
-import { StopComponent } from './components/scan/stop/stop.component';
 
+import { Store } from '../store';
 @NgModule({
   imports: [
     CommonModule,

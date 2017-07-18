@@ -2,20 +2,19 @@
 <div class="container-fluid">
     <p class="lead">Home SqFt: {{sqft | homesqft}}</p>
     <p class="lead">Total Floor(s) include basement: {{totalFloors}}</p>
-    <p class="lead">Wi-Fi Gateway Location: {{ gatewayLocation | floorname }}</p>
+    <p class="lead">Wi-Fi Gateway Location: {{ gatewayLocation | floorname | titlecase }}</p>
     <hr class="my-1">
      <div class="" *ngFor="let floor  of floors$ | async">
-      <p class="lead">{{floor.value | floorname}}</p>
+      <p class="lead">{{floor.id | floorname | titlecase}} </p>
       <ul class="list-group">
-        <li class="list-group-item" *ngFor="let item  of getFloorData(floor.value) | async">
+        <li class="list-group-item" *ngFor="let item  of getFloorData(floor.id) | async">
         <i class="fa fa-signal" aria-hidden="true"></i> {{item.room}}   <span class="{{item.strength}}"> -{{item.reading}} dBm </span>
         </li>
       </ul>
     </div>
 </div>
-<p class="lead lead__center">
+<!-- <p class="lead lead__center">
     <a class="btn btn-default btn-lg" [routerLink]="['/wifi-scan/more']"
       routerLinkActive="active" role="button">SCAN MORE ROOMS</a>
-    <!-- <a class="btn btn-default btn-lg" (click)="done()">DONE</a> -->
-</p>
+</p> -->
 </div>

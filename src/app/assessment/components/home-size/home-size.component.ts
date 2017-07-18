@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '../../../store';
 import { Home } from '../../models/home';
 import { AssessmentService } from '../../services/assessment.service';
+import { SQFT_META_DATA, FLOOR_LIST_DATA, FLOOR_OPTIONS_DATA } from '../../models/types';
 
 @Component({
   selector: 'cp-home-size',
@@ -13,9 +14,11 @@ import { AssessmentService } from '../../services/assessment.service';
 export class HomeSizeComponent implements OnInit {
   title: String = 'Home Size';
   home: Home;
-  floors: number;
+  floors = 4;
+  wifiFloors: string[];
   basement: false;
-  sqft: 4;
+  sqft: number;
+  bfloors: any[];
   floors$ = this.store.select<any[]>('floors');
   basements$ = this.store.select<any[]>('basements');
   sqfts$ = this.store.select<any[]>('sqfts');
@@ -23,18 +26,44 @@ export class HomeSizeComponent implements OnInit {
   constructor(private store: Store, private router: Router, private service: AssessmentService) { }
 
   ngOnInit() {
-    this.store.set('floors', [{ id: 1, name: '1' }, { id: 2, name: '2' }, { id: 3, name: '3' }, { id: 4, name: '4'}]);
+    let floors = new Array();
+    this.bfloors = new Array();
+    floors = floors.concat(FLOOR_LIST_DATA).splice(1, 4);
+    this.bfloors = [].concat(FLOOR_OPTIONS_DATA).splice(1, this.floors);
+
+    this.store.set('floors', floors);
     this.store.set('basements', [{ value: true, name: 'yes' }, { value: false, name: 'no' }]);
-    this.store.set('sqfts', [
-      { id: 1, name: '0 - 2000 SqFt' },
-      { id: 2, name: '2001 - 4000 SqFt' },
-      { id: 3, name: '4001 - 5000 SqFt' },
-      { id: 4, name: '5001+ SqFt' },
-      { id: 5, name: 'I am not sure' },
-    ]);
+    this.store.set('sqfts', SQFT_META_DATA);
+  }
+
+  logBasement(basement) {
+    this.basement = basement;
+    this.generateWifiFloorSelection(this.floors);
+  }
+
+  logFloor(floor) {
+    this.floors = floor;
+    this.generateWifiFloorSelection(floor);
+  }
+
+  get selectedOptions() {
+    return this.bfloors
+      .filter(opt => opt.checked)
+      .map(opt => opt.id);
+  }
+
+  generateWifiFloorSelection(count) {
+    let start = 0;
+    if (!this.basement) {
+      start = 1;
+    } else {
+      ++count;
+    }
+    this.bfloors = [].concat(FLOOR_OPTIONS_DATA).splice(start, count);
   }
 
   onSubmit({ value, valid }: { value: Home, valid: boolean }) {
+    console.log(value);
     localStorage.clear();
     this.store.set('results', []);
     let totalFloors = 0;
@@ -46,6 +75,7 @@ export class HomeSizeComponent implements OnInit {
       totalFloors = 1;
     }
     totalFloors += value.floors;
+    localStorage.setItem('wifiFloors', JSON.stringify(this.selectedOptions));
     localStorage.setItem('totalFloors', JSON.stringify(totalFloors));
     localStorage.setItem('home', JSON.stringify(value));
     this.service.initFloors();

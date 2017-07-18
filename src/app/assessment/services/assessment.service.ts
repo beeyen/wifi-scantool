@@ -2,6 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Result } from '../models/result';
 import { Home } from '../models/home';
 import { Store } from '../../store';
+import { SQFT_META_DATA, FLOOR_LIST_DATA } from '../models/types';
 @Injectable()
 export class AssessmentService {
   statusUpdated = new EventEmitter<string>();
@@ -41,38 +42,28 @@ export class AssessmentService {
   }
 
   initFloors() {
-    const floors = [];
+    let floors = new Array();
+    floors = floors.concat(FLOOR_LIST_DATA);
     // retrieving # of floor and construct floor list
     const home = JSON.parse(localStorage.getItem('home'));
     if (home.basement) {
-      floors.push({ value: '0', name: 'Basement' });
-      for (let i = 1; i <= home.floors; i++) {
-        floors.push({ value: `${i}`, name: `${i}` });
-      }
+      floors = floors.splice(0, home.floors);
     } else {
-      for (let i = 1; i <= home.floors; i++) {
-        floors.push({ value: `${i}`, name: `${i}` });
-      }
+      floors = floors.splice(1, home.floors);
     }
     localStorage.setItem('floors', JSON.stringify(floors));
     this.store.set('floors', floors);
   }
 
   getFloors() {
-    const floors = [];
+    let floors = new Array();
+    floors = floors.concat(FLOOR_LIST_DATA);
     // retrieving # of floor and construct floor list
     const home = JSON.parse(localStorage.getItem('home'));
-    if (home) {
-      if (home.basement) {
-        floors.push({ value: '0', name: 'Basement' });
-        for (let i = 1; i <= home.floors; i++) {
-          floors.push({ value: `${i}`, name: `${i}` });
-        }
-      } else {
-        for (let i = 1; i <= home.floors; i++) {
-          floors.push({ value: `${i}`, name: `${i}` });
-        }
-      }
+    if (home.basement) {
+      floors = floors.splice(0, home.floors + 1);
+    } else {
+      floors = floors.splice(1, home.floors);
     }
     this.store.set('floors', floors);
   }
@@ -102,7 +93,7 @@ export class AssessmentService {
         return result;
       }
     });
-    console.log('get result for floor:', data);
+    // console.log('get result for floor:', data);
     return data;
   }
 

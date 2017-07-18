@@ -1,8 +1,21 @@
 <div class="main">
 <cp-stepper [activeStep]="2"></cp-stepper>
 <div class="container-fluid">
-  <div class="alert alert-info" role="alert">
-    {{instruction}}
+  <div class="media">
+      <div class="media-left">
+          <div class="item-circle"><span>1</span></div>
+      </div>
+      <div class="media-body">
+          <p>{{instruction}}</p>
+      </div>
+  </div>
+  <div class="media">
+      <div class="media-left">
+          <div class="item-circle"><span>2</span></div>
+      </div>
+      <div class="media-body">
+          <p>Scan using RF monitor and wait in the room for 20 sec before recording the result. </p>
+      </div>
   </div>
   <form novalidate #f="ngForm" (ngSubmit)="onSubmit(f); f.reset();" #f="ngForm">
     <div class="md-form">

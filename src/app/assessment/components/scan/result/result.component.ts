@@ -27,8 +27,7 @@ export class ResultComponent implements OnInit {
     return (!this.store.value.results);
   }
   ngOnInit() {
-    this.service.getFloors()
-    this.service.testResults();
+    this.service.getFloors();
     this.totalFloors = +this.service.getTotalFloors();
     this.gatewayLocation = +this.service.getGatewayLocation(); // +convert to number
     const home = JSON.parse(localStorage.getItem('home'));

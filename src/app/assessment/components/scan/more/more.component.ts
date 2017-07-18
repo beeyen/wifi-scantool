@@ -18,7 +18,7 @@ export class MoreComponent implements OnInit {
   constructor(private store: Store, private router: Router, private service: AssessmentService) { }
 
   ngOnInit() {
-    // this.service.getFloors();
+    this.service.getFloors();
     if (this.service.getTotalFloors() <= 1) {
       this.displayFloorSelection = false;
     }

@@ -14,7 +14,7 @@
           <div class="item-circle"><span>2</span></div>
       </div>
       <div class="media-body">
-          <p>Scan using RF monitor and wait in the room for 15 sec before recording the result. </p>
+          <p>Scan using RF monitor and wait in the room for 20 sec before recording the result. </p>
       </div>
   </div>
   <hr class="my">
@@ -23,9 +23,9 @@
       <p>Select the floor where the Wi-Fi gateway is?</p>
       <div class="form-inline">
         <fieldset class="form-group" *ngFor="let floor of floors$ | async">
-          <input class="with-gap" name="floor" type="radio" id="floor{{floor.value}}"
-              [value]="floor.value" [(ngModel)]="floor.value">
-          <label for="floor{{floor.value}}"><span>{{floor.name}}</span></label>
+          <input class="with-gap" name="floor" type="radio" id="floor{{floor.id}}"
+              [value]="floor.id" [(ngModel)]="floor.id">
+          <label for="floor{{floor.id}}"><span>{{floor.name}}</span></label>
         </fieldset>
       </div>
     </div>

@@ -6,7 +6,6 @@ import { Component, OnInit, Input } from '@angular/core';
   <nav class="navbar navbar-dark stylish-color fixed-top">
     <div class="container">
         <a class="navbar-brand">
-            <i class="arrow fa fa-angle-left" aria-hidden="true"></i>
             <strong>{{title}}</strong>
         </a>
     </div>
