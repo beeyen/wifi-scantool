@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cp-complete',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CompleteComponent implements OnInit {
   title: String = 'Wi-Fi Scan';
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  more() {
+    this.router.navigate(['/wifi-scan/more'], { skipLocationChange: true });
   }
 
 }

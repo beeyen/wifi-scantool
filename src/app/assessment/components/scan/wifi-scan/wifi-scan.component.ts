@@ -8,6 +8,7 @@ import { FLOORS } from '../../../models/types';
 import { ScanInfo } from '../../../models/scanInfo';
 import { Dictionary } from '../../../models/ikeycollection';
 import { FLOOR_LIST_DATA } from '../../../models/types';
+import { Home } from '../../../models/home';
 
 @Component({
   selector: 'cp-wifi-scan',
@@ -24,13 +25,17 @@ export class WifiScanComponent implements OnInit {
   gatewayLocation;
   totalFloors: number;
   nextScanData: ScanInfo;
-  wifiFloors: number[];
+  scanFloors: number[];
+  floorsScanned: any[];
   floors$ = this.store.select<any[]>('floors');
   floors = [];
   scanPerFloor = new Dictionary<any[]>();
-
-  constructor(private store: Store, private router: Router, private route: ActivatedRoute, private service: AssessmentService) { }
-
+  scanDirection = '';
+  home: Home;
+  constructor(private store: Store,
+    private router: Router,
+    private route: ActivatedRoute,
+    private service: AssessmentService) { }
   ngOnInit() {
     this.service.getFloors();
     this.route
@@ -47,16 +52,19 @@ export class WifiScanComponent implements OnInit {
         this.floors = data
       }
     });
-    // TODO: init scanPerFloor Dictionary by wifi floor selection
-    this.wifiFloors = JSON.parse(localStorage.getItem('wifiFloors'));
-    console.log(this.wifiFloors);
-    /* for (let i = 0; i < this.totalFloors; i++) {
-      this.scanPerFloor.Add(this.floors[i].id, []);
-    } */
-    for (let i = 0; i < this.wifiFloors.length; i++) {
-      this.scanPerFloor.Add(Number(this.wifiFloors[i]).toString(), []);
+    this.home = JSON.parse(localStorage.getItem('home'));
+    // retrieving list of floors to scan
+    this.scanFloors = JSON.parse(localStorage.getItem('wifiFloors'));
+    // descending
+    // this.scanFloors.sort(function (a, b) { return b - a });
+    // init scanPerFloor Dictionary by wifi floor selection
+    for (let i = 0; i < this.scanFloors.length; i++) {
+      this.scanPerFloor.Add(Number(this.scanFloors[i]).toString(), []);
     }
-    console.log(this.scanPerFloor);
+    // add gatewayLocation in the dictionary if it doesn't exists in scanFloors list
+    if (this.scanFloors.filter(fl => fl === this.gatewayLocation).length === 0) {
+      this.scanPerFloor.Add(Number(this.gatewayLocation).toString(), []);
+    }
     this.templateSetUp(this.floor, this.scanType);
   }
 
@@ -70,22 +78,134 @@ export class WifiScanComponent implements OnInit {
     }
   }
 
-  getFloorName(floor) {
-    switch (floor) {
-      case 0:
-        return 'basement';
-      case 1:
-        return 'first floor';
-      case 2:
-        return 'second floor';
-      case 3:
-        return 'third floor';
-      case 4:
-        return 'fourth floor';
+  getNext() {
+    const scanPerFloor = this.scanPerFloor.Item(Number(this.floor).toString());
+    const green = scanPerFloor.filter(res => { return res === 'GREEN' });
+    const maxFloors = Math.max(...this.scanFloors);
+    const minFloors = Math.min(...this.scanFloors);
+    /* console.log('this floor:', this.floor);
+    console.log('scanPerFloor:', scanPerFloor);
+    console.log('floors to scan:', this.scanFloors); */
+    if (this.floor === this.gatewayLocation) { // second scan of locating gateway position
+      // gateway location on top floor
+      if ((this.gatewayLocation === maxFloors) ||
+        ((!this.home.basement && this.totalFloors > 1 && this.gatewayLocation === this.totalFloors) ||
+          (this.home.basement && this.totalFloors > 1 && this.gatewayLocation === this.totalFloors - 1))) {
+        this.scanDirection = 'down';
+
+        if (green.length === 0 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else if (green.length === 1 && this.scanType === 1 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else {
+          return this.getNextUnscanned(this.floor, this.scanDirection);
+        }
+
+      } else if ((this.gatewayLocation === minFloors) ||
+        ((!this.home.basement && this.totalFloors > 1 && this.gatewayLocation === 1) ||
+          (this.home.basement && this.totalFloors > 1 && this.gatewayLocation === 0))
+      ) { // bottom floor
+        this.scanDirection = 'up';
+        if (green.length === 0 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else if (green.length === 1 && this.scanType === 1 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else {
+          if ((!this.home.basement && this.floor <= this.totalFloors) ||
+            (this.home.basement && this.floor <= this.totalFloors - 1)) {
+            return this.getNextUnscanned(this.floor, this.scanDirection);
+          }
+        }
+      } else { // gateway in the middle
+        // do something here
+        this.scanDirection = 'up';
+        if (green.length === 0 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else if (green.length === 1 && this.scanType === 1 && scanPerFloor.length < 2) {
+          return this.floor;
+        } else {
+          if ((!this.home.basement && this.floor <= this.totalFloors) ||
+            (this.home.basement && this.floor <= this.totalFloors - 1)) {
+            return this.getNextUnscanned(this.floor, this.scanDirection);
+          }
+        }
+      }
+    } else {
+      // GATEWAY IN MIDDLE FLOOR
+      if (green.length === 2 || scanPerFloor.length >= 3) {
+        return this.getNextUnscanned(this.floor, this.scanDirection);
+      } else {
+        return this.floor;
+      }
     }
   }
 
-  getNextFloor(currentFloor: number, scanPerFloor: any[]) {
+  getNextLowerFloor(floor) {
+    if (this.scanFloors.filter(fl => fl === floor).length > 0) {
+      return floor;
+    } else {
+      if (floor > 0) {
+        return this.getNextLowerFloor(floor - 1);
+      } else {
+        return -1;
+      }
+    }
+  }
+
+  getNextHigherFloor(floor) {
+    const maxFloors = Math.max(...this.scanFloors);
+    if (this.scanFloors.filter(fl => fl === floor).length > 0) {
+      return floor;
+    } else {
+      if (floor < maxFloors) {
+        return this.getNextHigherFloor(floor + 1);
+      } else {
+        // check to see if we need to go down
+        if (this.scanFloors.length > 0) {
+          this.scanDirection = 'down';
+          return this.getNextLowerFloor(floor - 1);
+        }
+        return -1;
+      }
+    }
+  }
+
+  getNextUnscanned(floor, direction) {
+    // REMOVE THIS FLOOR FROM FLOORS TO SCAN
+    const newScanFloors = [];
+    let temp;
+    for (let i = 0; i < this.scanFloors.length; i++) {
+      if (this.scanFloors[i] !== floor) {
+        newScanFloors.push(this.scanFloors[i]);
+      }
+    }
+    this.scanFloors = newScanFloors;
+    if (direction === 'down') { // at top, go down
+      if (floor > 0) {
+        temp = this.getNextLowerFloor(floor - 1);
+      } else {
+        temp = -1;
+      }
+      return temp;
+    } else if (direction === 'up') {
+      if (floor < this.totalFloors) {
+        temp = this.getNextHigherFloor(floor + 1);
+      } else {
+        temp = -1;
+      }
+      return temp;
+    } else {
+      if (this.scanFloors.length > 0) {
+        return this.scanFloors.pop();
+      } else {
+        return -1;
+      }
+    }
+  }
+
+  // previous version w/o discrimination of which floor to scan
+  /* getNextFloor(currentFloor: number, scanPerFloor: any[]) {
+    // TESTING NEW LOGIC
     // logic to determine what is the next floor in the flow
     const home = JSON.parse(localStorage.getItem('home'));
     const green = scanPerFloor.filter(res => { return res === 'GREEN' });
@@ -193,7 +313,7 @@ export class WifiScanComponent implements OnInit {
         }
       }
     }
-  }
+  } */
 
   getScanType(floor) {
     // const result = scanPerFloor.filter((res, i) => { return res === 'RED' });
@@ -209,10 +329,6 @@ export class WifiScanComponent implements OnInit {
       return 2;
     }
   }
-
-  refreshForm() {
-
-  };
 
   onSubmit({ value, valid }: { value: Result, valid: boolean }) {
     const result = value;
@@ -235,30 +351,25 @@ export class WifiScanComponent implements OnInit {
     // logic to dertermine next floor goes here
     // if on gateway floor && reading is green go to next floor
     if (this.gatewayLocation === this.floor) {
-      // go next floor
-      // if total floor is 1, go to complete
-      if (this.totalFloors === 1) {
+      // if total floor is 1
+      if (this.scanPerFloor.Count() === 1) {
+        // 3rd scan on gateway floor
         if (strength !== 'GREEN' && this.scanType !== 1 && scanPerFloor.length < 2) {
           this.nextScan({ floor: this.floor, scanType: 1 })
           this.templateSetUp(this.floor, 1);
-        } else if (strength === 'GREEN' && this.scanType === 1 && scanPerFloor.length < 2) {
-          this.nextScan({ floor: this.floor, scanType: 0 })
-          this.templateSetUp(this.floor, 0);
         } else {
           this.complete();
         }
       } else {
-        /* const greenlist = this.scanPerFloor.Item(Number(this.floor).toString()).filter(res => res === 'GREEN');
-        if (greenlist.length === 0 && this.scanType === 1) {
-          this.stopScan();
-        */
-        this.floor = this.getNextFloor(this.floor, scanPerFloor);
+        // this.floor = this.getNextFloor(this.floor, scanPerFloor);
+        this.floor = this.getNext();
         this.scanType = this.getScanType(this.floor);
         this.nextScan({ floor: this.floor, scanType: this.scanType });
         this.templateSetUp(this.floor, this.scanType);
       }
     } else {
-      this.floor = this.getNextFloor(this.floor, scanPerFloor);
+      // this.floor = this.getNextFloor(this.floor, scanPerFloor);
+      this.floor = this.getNext();
       this.scanType = this.getScanType(this.floor);
       if (this.floor !== -1) {
         this.nextScan({ floor: this.floor, scanType: this.scanType });

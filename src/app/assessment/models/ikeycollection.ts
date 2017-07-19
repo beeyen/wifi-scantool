@@ -26,6 +26,10 @@ export class Dictionary<T> implements IKeyedCollection<T> {
     this.count++;
   }
 
+  public Update(key: string, value: T) {
+    this.items[key] = value;
+  }
+
   public Remove(key: string): T {
     const val = this.items[key];
     delete this.items[key];

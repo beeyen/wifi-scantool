@@ -13,11 +13,11 @@ export enum SignalStrength {
 };
 
 export const SQFT_META_DATA = [
-  { id: 1, name: '0 - 2000 SqFt' },
-  { id: 2, name: '2001 - 4000 SqFt' },
-  { id: 3, name: '4001 - 5000 SqFt' },
-  { id: 4, name: '5001+ SqFt' },
-  { id: 5, name: 'I am not sure' },
+  { id: 0, name: '0 - 2000 SqFt' },
+  { id: 1, name: '2001 - 4000 SqFt' },
+  { id: 2, name: '4001 - 5000 SqFt' },
+  { id: 3, name: '5001+ SqFt' },
+  { id: 4, name: 'I am not sure' },
 ];
 
 export const FLOOR_META_DATA = [

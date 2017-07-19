@@ -18,14 +18,16 @@
         <label for="floor_{{floor.id}}"><span>{{floor.name}}</span></label>
       </fieldset>
     </div>
-    <hr class="my">
-    <p>Which floors do you needs Wi-Fi coverage in?</p>
-    <div class="form-inline">
-        <fieldset class="form-group" *ngFor="let bf of bfloors">
-        <input name="wifiFloors" class="filled-in" type="checkbox" id="wifi-floor{{bf.id}}"
-            [value]="bf.id" [(ngModel)]="bf.checked">
-        <label for="wifi-floor{{bf.id}}">{{bf.name}}</label>
-      </fieldset>
+    <div *ngIf="basement || (!basement && floors > 1)">
+      <hr class="my">
+      <p>Which floors do you needs Wi-Fi coverage in?</p>
+      <div class="form-inline">
+          <fieldset class="form-group" *ngFor="let bf of bfloors">
+          <input name="wifi-floors" class="filled-in" type="checkbox" id="wifi-floor{{bf.id}}"
+              [value]="bf.id" [(ngModel)]="bf.checked">
+          <label for="wifi-floor{{bf.id}}">{{bf.name}}</label>
+        </fieldset>
+      </div>
     </div>
     <hr class="my">
     <p>What is the square footage of your home?</p>

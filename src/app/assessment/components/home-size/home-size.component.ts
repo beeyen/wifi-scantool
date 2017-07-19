@@ -47,9 +47,15 @@ export class HomeSizeComponent implements OnInit {
   }
 
   get selectedOptions() {
-    return this.bfloors
-      .filter(opt => opt.checked)
-      .map(opt => opt.id);
+    if (!this.basement && this.floors === 1) {
+      return this.bfloors
+        .filter(opt => opt.id === 1)
+        .map(opt => opt.id);
+    } else {
+      return this.bfloors
+        .filter(opt => opt.checked)
+        .map(opt => opt.id);
+    }
   }
 
   generateWifiFloorSelection(count) {
@@ -63,12 +69,11 @@ export class HomeSizeComponent implements OnInit {
   }
 
   onSubmit({ value, valid }: { value: Home, valid: boolean }) {
-    console.log(value);
     localStorage.clear();
     this.store.set('results', []);
     let totalFloors = 0;
-    // save this to store???
-    // this.store.set('home', value);
+
+    this.store.set('home', value);
     this.service.setHomeSize(value);
     // total Floor include basement
     if (value.basement) {

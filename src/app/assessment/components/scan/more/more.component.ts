@@ -3,6 +3,7 @@ import { Result } from '../../../models/result';
 import { Store } from '../../../../store';
 import { Router } from '@angular/router';
 import { AssessmentService } from '../../../services/assessment.service';
+import { FLOOR_OPTIONS_DATA } from '../../../models/types';
 
 @Component({
   selector: 'cp-more',
@@ -13,8 +14,9 @@ export class MoreComponent implements OnInit {
   title: String = 'Wi-Fi SCAN';
   result: Result;
   results: any[];
-  floors$ = this.store.select<any[]>('floors');
+  // floors$ = this.store.select<any[]>('floors');
   displayFloorSelection = true;
+  floors = [];
   constructor(private store: Store, private router: Router, private service: AssessmentService) { }
 
   ngOnInit() {
@@ -22,6 +24,16 @@ export class MoreComponent implements OnInit {
     if (this.service.getTotalFloors() <= 1) {
       this.displayFloorSelection = false;
     }
+    const gatewayLocation = +this.service.getGatewayLocation();
+    const home = JSON.parse(localStorage.getItem('home'));
+    const scanFloors = JSON.parse(localStorage.getItem('wifiFloors'));
+    if (scanFloors.filter(fl => fl === gatewayLocation).length === 0) {
+      scanFloors.push(gatewayLocation);
+    }
+    scanFloors.sort();
+    scanFloors.forEach(item => {
+      this.floors.push(FLOOR_OPTIONS_DATA[item]);
+    });
   }
 
   onSubmit({ value, valid }: { value: Result, valid: boolean }) {

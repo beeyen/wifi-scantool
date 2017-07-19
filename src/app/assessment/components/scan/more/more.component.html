@@ -5,10 +5,10 @@
     <div *ngIf="displayFloorSelection">
       <p>Select the floor you are on?</p>
       <div class="form-inline">
-        <fieldset class="form-group" *ngFor="let f of floors$ | async">
-          <input class="with-gap" name="floor" type="radio" id="{{f.value}}"
-              [value]="f.value" [ngModel]="result?.floor" required>
-          <label for="{{f.value}}"><span>{{f.name}}</span></label>
+        <fieldset class="form-group" *ngFor="let f of floors">
+          <input class="with-gap" name="floor" type="radio" id="{{f.id}}"
+              [value]="f.id" [ngModel]="f.id" required>
+          <label for="{{f.id}}"><span>{{f.name}}</span></label>
         </fieldset>
       </div>
     </div>
