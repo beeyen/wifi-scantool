@@ -80,9 +80,18 @@ export class AssessmentService {
     localStorage.setItem('gatewayLocation', JSON.stringify(floor));
   }
 
+  setGateWayRoomLocation(room: string) {
+    localStorage.setItem('gatewayRoomLocation', JSON.stringify(room));
+  }
+
   getGatewayLocation() {
     // console.log(JSON.parse(localStorage.getItem('gatewayLocation')));
     return JSON.parse(localStorage.getItem('gatewayLocation'));
+  }
+
+  getGatewayRoomLocation() {
+    // console.log(JSON.parse(localStorage.getItem('gatewayLocation')));
+    return JSON.parse(localStorage.getItem('gatewayRoomLocation'));
   }
 
   getFloorData(floor: number) {

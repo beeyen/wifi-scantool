@@ -22,18 +22,18 @@ export const SQFT_META_DATA = [
 
 export const FLOOR_META_DATA = [
   { value: 0, name: 'Basement' },
-  { value: 1, name: 'First floor' },
-  { value: 2, name: 'Second floor' },
-  { value: 3, name: 'Third floor' },
-  { value: 4, name: 'Fourth floor' },
+  { value: 1, name: '1st floor' },
+  { value: 2, name: '2nd floor' },
+  { value: 3, name: '3rd floor' },
+  { value: 4, name: '4th floor' },
 ]
 
 export const FLOOR_LIST_DATA = [
-  { id: 0, name: 'Basement', desc: 'basement' },
-  { id: 1, name: '1', desc: '1st floor' },
-  { id: 2, name: '2', desc: '2nd floor' },
-  { id: 3, name: '3', desc: '3rd floor' },
-  { id: 4, name: '4', desc: '4th floor' }
+  { id: 0, name: 'Basement', desc: 'Basement' },
+  { id: 1, name: '1', desc: '1st Floor' },
+  { id: 2, name: '2', desc: '2nd Floor' },
+  { id: 3, name: '3', desc: '3rd Floor' },
+  { id: 4, name: '4', desc: '4th Floor' }
 ]
 
 export const FLOOR_OPTIONS_DATA = [

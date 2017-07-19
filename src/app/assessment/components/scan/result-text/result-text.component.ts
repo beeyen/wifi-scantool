@@ -11,10 +11,10 @@ import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'cp-result',
-  templateUrl: './result.component.html',
-  styleUrls: ['./result.component.scss']
+  templateUrl: './result-text.component.html',
+  styleUrls: ['./result-text.component.scss']
 })
-export class ResultComponent implements OnInit {
+export class ResultTextComponent implements OnInit {
   title: String = 'Wi-Fi SCAN RESULT';
   results$ = this.store.select<any[]>('results');
   floors = [];
@@ -30,7 +30,6 @@ export class ResultComponent implements OnInit {
     return (!this.store.value.results);
   }
   ngOnInit() {
-    console.log(this.store.value);
     this.service.getFloors();
     this.totalFloors = +this.service.getTotalFloors();
     this.gatewayLocation = +this.service.getGatewayLocation(); // +convert to number
@@ -75,62 +74,6 @@ export class ResultComponent implements OnInit {
     const text = [];
     this.wifiFloors.forEach(obj => text.push(FLOOR_LIST_DATA[obj].desc));
     return text.join(', ');
-  }
-
-  download() {
-    const content = this.generateTextResult();
-    const blob = new Blob(content, { type: 'text/plain;charset=utf-8' });
-    FileSaver.saveAs(blob, 'scan-result.txt');
-    this.router.navigate(['/instruction']);
-  }
-
-  generateTextResult() {
-    const content = [];
-    content.push(`Home SqFt: ${SQFT_META_DATA[this.sqft].name}\r\n`);
-    content.push(`Total Floor(s) include basement: ${this.totalFloors}\r\n`);
-    content.push(`Wi-Fi Gateway Location: ${FLOOR_LIST_DATA[this.gatewayLocation].desc} - Room: ${this.gatewayRoom}\r\n`)
-    content.push(`Floors you needs Wi-Fi coverage: `);
-    const floors = [];
-    this.wifiFloors.forEach(floor => {
-      floors.push(`${FLOOR_META_DATA[floor].name}`);
-    });
-    content.push(floors.join(',') + '\r\n');
-    content.push('===============================\r\n');
-    this.floors.forEach(floor => {
-      content.push(`${FLOOR_LIST_DATA[floor.id].desc}\r\n`);
-      const rooms$ = this.getFloorData(floor.id);
-      rooms$.subscribe(data => {
-        data.forEach(item => {
-          content.push(`${item.room}: -${item.reading} dBm\r\n`);
-        });
-      });
-    });
-    return content;
-  }
-
-  generateHTMLResult() {
-    const content = [];
-    content.push(`<p>Home SqFt: ${SQFT_META_DATA[this.sqft].name}</p>`);
-    content.push(`<p>Total Floor(s) include basement: ${this.totalFloors}</p>`);
-    content.push(`Wi-Fi Gateway Location: ${FLOOR_LIST_DATA[this.gatewayLocation].desc} - Room: ${this.gatewayRoom}\r\n`)
-    content.push(`Floors you needs Wi-Fi coverage: `);
-    const floors = [];
-    this.wifiFloors.forEach(floor => {
-      floors.push(`${FLOOR_META_DATA[floor].name}`);
-    });
-    content.push(floors.join(',') + '\r\n');
-    content.push('===============================\r\n');
-    this.floors.forEach(floor => {
-      content.push(`${FLOOR_LIST_DATA[floor.id].desc}\r\n`);
-      const rooms$ = this.getFloorData(floor.id);
-      rooms$.subscribe(data => {
-        data.forEach(item => {
-          content.push(`${item.room}: -${item.reading} dBm\r\n`);
-        });
-      });
-    });
-    console.log(content);
-    return content;
   }
 
 }

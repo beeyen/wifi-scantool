@@ -392,7 +392,7 @@ export class WifiScanComponent implements OnInit {
   }
 
   complete() {
-    this.router.navigate(['/wifi-scan/complete'], { skipLocationChange: false });
+    this.router.navigate(['/wifi-scan/complete'], { skipLocationChange: true });
   }
 
   stopScan() {

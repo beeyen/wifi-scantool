@@ -32,6 +32,7 @@ export class LocatingGatewayComponent implements OnInit {
       this.service.setGateWayLocation(1);
       value.floor = 1;
     }
+    this.service.setGateWayRoomLocation(value.room);
     const strength = this.service.checkSignalStrength(value.reading);
     value.strength = strength.toLowerCase();
     value.reading = Math.abs(value.reading);

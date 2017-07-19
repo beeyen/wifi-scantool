@@ -2,10 +2,10 @@
 <div class="container-fluid">
     <p class="lead">Home SqFt: {{sqft | homesqft}}</p>
     <p class="lead">Total Floor(s) include basement: {{totalFloors}}</p>
-    <p class="lead">Wi-Fi Gateway Location: {{ gatewayLocation | floorname | titlecase }}</p>
+    <p class="lead">Wi-Fi Gateway Location: {{ gatewayLocation | floorname | titlecase }} - Room: {{gatewayRoom}}</p>
     <p class="lead">Floors you needs Wi-Fi coverage: {{wifiCoverageFloors | titlecase}}</p>
     <hr class="my-1">
-     <div class="" *ngFor="let floor  of floors">
+    <div class="" *ngFor="let floor  of floors">
       <p class="lead">{{floor.id | floorname | titlecase}} </p>
       <ul class="list-group">
         <li class="list-group-item" *ngFor="let item  of getFloorData(floor.id) | async">
@@ -13,5 +13,11 @@
         </li>
       </ul>
     </div>
+    <div>
+    </div>
+    <p class="lead lead__center">
+          <a class="btn btn-default btn-lg" (click)="download()"
+            routerLinkActive="active" role="button">SAVE RESULT</a>
+      </p>
 </div>
 </div>
