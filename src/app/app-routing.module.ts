@@ -10,7 +10,6 @@ import { WifiScanComponent } from './assessment/components/scan/wifi-scan/wifi-s
 import { ResultComponent } from './assessment/components/scan/result/result.component';
 import { MoreComponent } from './assessment/components/scan/more/more.component';
 import { StopComponent } from './assessment/components/scan/stop/stop.component';
-import { ResultTextComponent } from './assessment/components/scan/result-text/result-text.component';
 
 const ROUTES: Routes = [
   {
@@ -48,10 +47,6 @@ const ROUTES: Routes = [
   {
     path: 'wifi-scan/result',
     component: ResultComponent
-  },
-  {
-    path: 'wifi-scan/result-text',
-    component: ResultTextComponent
   },
   {
     path: 'wifi-scan/more',

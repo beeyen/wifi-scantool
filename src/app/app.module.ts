@@ -11,6 +11,9 @@ import { AssessmentModule } from './assessment/assessment.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { Store } from './store';
+import { firebaseConfig } from '../environments/firebase.config';
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,8 @@ import { Store } from './store';
   ],
   imports: [
     BrowserModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule,
     FormsModule,
     AppRoutingModule,
     AssessmentModule,

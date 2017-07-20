@@ -15,11 +15,11 @@ import { CompleteComponent } from './components/scan/complete/complete.component
 import { ResultComponent } from './components/scan/result/result.component';
 import { MoreComponent } from './components/scan/more/more.component';
 import { StopComponent } from './components/scan/stop/stop.component';
-import { ResultTextComponent } from './components/scan/result-text/result-text.component';
 import { FloorNamePipe } from './pipes/floorname.pipe';
 import { HomeSqftPipe } from './pipes/homesqft.pipe';
 
 import { Store } from '../store';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -41,7 +41,6 @@ import { Store } from '../store';
     FloorNamePipe,
     HomeSqftPipe,
     StopComponent,
-    ResultTextComponent,
   ],
   exports: [
     HeaderComponent

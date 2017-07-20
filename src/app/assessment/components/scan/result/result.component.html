@@ -1,5 +1,6 @@
 <div class="main">
 <div class="container-fluid">
+  <div>
     <p class="lead">Home SqFt: {{sqft | homesqft}}</p>
     <p class="lead">Total Floor(s) include basement: {{totalFloors}}</p>
     <p class="lead">Wi-Fi Gateway Location: {{ gatewayLocation | floorname | titlecase }} - Room: {{gatewayRoom}}</p>
@@ -13,11 +14,13 @@
         </li>
       </ul>
     </div>
-    <div>
-    </div>
-    <p class="lead lead__center">
+  </div>
+  <div [hidden]="!downloadURL" class="alert alert-success" role="alert">
+    <p class="lead">Click <a href="{{downloadURL}}" target="_blank">here</a> to access your scan result.</p>
+  </div>
+    <!-- <p class="lead lead__center">
           <a class="btn btn-default btn-lg" (click)="download()"
             routerLinkActive="active" role="button">SAVE RESULT</a>
-      </p>
+      </p> -->
 </div>
 </div>

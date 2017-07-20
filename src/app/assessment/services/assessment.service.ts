@@ -31,10 +31,13 @@ export class AssessmentService {
     if (this.results$) {
       this.results$.subscribe(data => {
         if (data) {
-          this.results = data
-          // console.log('results objectx:', this.results);
+          return true;
+        } else {
+          return false;
         }
       });
+    } else {
+      return false;
     }
   }
   setHomeSize(home: Home) {

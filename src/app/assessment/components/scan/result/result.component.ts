@@ -1,13 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Result } from '../../../models/result';
 import { Store } from '../../../../store';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AssessmentService } from '../../../services/assessment.service';
 import { SQFT_META_DATA, FLOOR_META_DATA, FLOOR_OPTIONS_DATA, FLOOR_LIST_DATA } from '../../../models/types';
 import * as FileSaver from 'file-saver';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+
+import { FirebaseApp } from 'angularfire2';
+import * as firebase from 'firebase';
+import 'firebase/storage';
 
 @Component({
   selector: 'cp-result',
@@ -24,13 +28,23 @@ export class ResultComponent implements OnInit {
   sqft: number;
   basement: false;
   wifiFloors: string[];
-  constructor(private store: Store, private router: Router, private service: AssessmentService) { }
+  downloadURL: string;
+
+  doneSave: EventEmitter<any> = new EventEmitter();
+
+  constructor(private store: Store,
+    private router: Router,
+    private route: ActivatedRoute,
+    private service: AssessmentService,
+    private firebaseApp: FirebaseApp) {
+
+  }
+
 
   get showResult() {
     return (!this.store.value.results);
   }
   ngOnInit() {
-    console.log(this.store.value);
     this.service.getFloors();
     this.totalFloors = +this.service.getTotalFloors();
     this.gatewayLocation = +this.service.getGatewayLocation(); // +convert to number
@@ -40,9 +54,23 @@ export class ResultComponent implements OnInit {
     this.basement = home.basement;
     this.wifiFloors = JSON.parse(localStorage.getItem('wifiFloors'));
     this.floors = this.generateWifiFloorSelection();
-    if (!this.store.value || !home) {
-      this.router.navigate(['/gettingStarted']);
+    this.checkResultData();
+    this.route
+      .queryParams
+      .subscribe(params => this.done = params['done']);
+    // TODO: STOP BROWSER REFRESH
+    if (!this.downloadURL) {
+      this.saveToFirebase();
     }
+  }
+
+  checkResultData() {
+    const result$ = this.store.select('results');
+    let gotData = false;
+    let data: any[];
+    console.log(result$);
+    //result$.subscribe(res =>
+    //  gotData =  res.length > 0);
   }
 
   generateWifiFloorSelection() {
@@ -60,8 +88,12 @@ export class ResultComponent implements OnInit {
   }
 
   getFloorData(floor: number) {
-    return this.store.select('results').filter(Boolean)
-      .map(results => results.filter(res => res.floor - floor === 0));
+    if (this.store) {
+      return this.store.select('results').filter(Boolean)
+        .map(results => results.filter(res => res.floor - floor === 0));
+    } else {
+      return undefined;
+    }
     // for some reason res.floor === floor never be true :((((
   }
 
@@ -75,13 +107,6 @@ export class ResultComponent implements OnInit {
     const text = [];
     this.wifiFloors.forEach(obj => text.push(FLOOR_LIST_DATA[obj].desc));
     return text.join(', ');
-  }
-
-  download() {
-    const content = this.generateTextResult();
-    const blob = new Blob(content, { type: 'text/plain;charset=utf-8' });
-    FileSaver.saveAs(blob, 'scan-result.txt');
-    this.router.navigate(['/instruction']);
   }
 
   generateTextResult() {
@@ -105,32 +130,51 @@ export class ResultComponent implements OnInit {
         });
       });
     });
-    return content;
+    return content.join('');
   }
 
-  generateHTMLResult() {
-    const content = [];
-    content.push(`<p>Home SqFt: ${SQFT_META_DATA[this.sqft].name}</p>`);
-    content.push(`<p>Total Floor(s) include basement: ${this.totalFloors}</p>`);
-    content.push(`Wi-Fi Gateway Location: ${FLOOR_LIST_DATA[this.gatewayLocation].desc} - Room: ${this.gatewayRoom}\r\n`)
-    content.push(`Floors you needs Wi-Fi coverage: `);
-    const floors = [];
-    this.wifiFloors.forEach(floor => {
-      floors.push(`${FLOOR_META_DATA[floor].name}`);
-    });
-    content.push(floors.join(',') + '\r\n');
-    content.push('===============================\r\n');
-    this.floors.forEach(floor => {
-      content.push(`${FLOOR_LIST_DATA[floor.id].desc}\r\n`);
-      const rooms$ = this.getFloorData(floor.id);
-      rooms$.subscribe(data => {
-        data.forEach(item => {
-          content.push(`${item.room}: -${item.reading} dBm\r\n`);
+  saveToFirebase() {
+    const storageRef = this.firebaseApp.storage().ref();
+    const scandataRef = this.firebaseApp.storage().ref();
+    const fileContent = this.generateTextResult();
+    const timeInMs = Date.now();
+    const fileName = `${timeInMs}_scandata.txt`;
+    const file = new Blob([fileContent], { type: 'text/plain' });
+
+    const uploadTask = scandataRef.child('scandata/' + fileName).put(file);
+    const self = this;
+    // Register three observers:
+    // 1. 'state_changed' observer, called any time the state changes
+    // 2. Error observer, called on failure
+    // 3. Completion observer, called on successful completion
+    uploadTask.on('state_changed', function (snapshot) {
+      // Observe state change events such as progress, pause, and resume
+      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function (error) {
+      // Handle unsuccessful uploads
+    }, function (this) {
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      self.downloadURL = uploadTask.snapshot.downloadURL;
+      console.log('downloadURL', self.downloadURL);
+      localStorage.setItem('downloadURL', JSON.stringify(this.downloadURL));
+      self.doneSave.emit(null);
+      /* const timeoutId = setTimeout(() => {
+        self.router.navigate(['wifi-scan/result'], {
+          queryParams: { 'done': true }, replaceUrl: true
         });
-      });
+      }, 240000); */
     });
-    console.log(content);
-    return content;
   }
 
 }
